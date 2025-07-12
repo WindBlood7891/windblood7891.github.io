@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clear UI - Scratch OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    html, body {
+      background: linear-gradient(135deg, #0a0c14 0%, #0f1117 100%);
+      color: #ffffff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    @keyframes ballEnter {
+      0% { transform: scale(1.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes wordSwitch {
+      0% { opacity: 0; transform: translateY(100%); }
+      10% { opacity: 1; transform: translateY(0); }
+      30% { opacity: 1; transform: translateY(0); }
+      40% { opacity: 0; transform: translateY(-100%); }
+      100% { opacity: 0; transform: translateY(-100%); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 72px;
+      font-weight: 700;
+      color: #4eaaff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(78, 170, 255, 0.6);
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .subtitle {
+      font-size: 32px;
+      color: #c8e4ff;
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      line-height: 1.2;
+    }
+    
+    .changing-words {
+      display: inline-block;
+      position: relative;
+      min-width: 100px;
+      overflow: hidden;
+      vertical-align: middle;
+      margin: 0 2px;
+      height: 1.2em;
+    }
+    
+    .changing-words .word {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      color: #4eaaff;
+      left: 0;
+      opacity: 0;
+      font-weight: 700;
+      animation: wordSwitch 12s infinite;
+      text-shadow: 0 0 15px rgba(78, 170, 255, 0.5);
+      text-align: center;
+      transition: all 0.3s ease;
+      padding: 0 3px;
+    }
+    
+    .changing-words .word:nth-child(1) { animation-delay: 0s; }
+    .changing-words .word:nth-child(2) { animation-delay: 4s; }
+    .changing-words .word:nth-child(3) { animation-delay: 8s; }
+
+    .section {
+      min-height: 50vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 100px 12%;
+      background-color: rgba(24, 27, 36, 0.7);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 2;
+      border-bottom: 1px solid rgba(78, 170, 255, 0.1);
+    }
+
+    .section:nth-child(even) {
+      background-color: rgba(30, 33, 43, 0.7);
+    }
+
+    .section-content {
+      max-width: 800px;
+      text-align: center;
+    }
+
+    .section h2 {
+      font-size: 42px;
+      color: #4eaaff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px rgba(78, 170, 255, 0.3);
+    }
+
+    .section p {
+      font-size: 20px;
+      line-height: 1.8;
+      color: #ddeeff;
+      text-align: center;
+    }
+
+    .download {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(20, 23, 31, 0.8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      z-index: 2;
+    }
+
+    .download-btn {
+      padding: 20px 50px;
+      font-size: 22px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(to right, #4e9fff, #7ed0ff);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5), 
+                  0 0 30px rgba(78, 170, 255, 0.6);
+      position: relative;
+      z-index: 2;
+      font-weight: bold;
+      overflow: hidden;
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    .download-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 20px;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(25deg);
+      transition: all 0.6s;
+    }
+
+    .download-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 123, 255, 0.7), 
+                  0 0 40px rgba(78, 170, 255, 0.8);
+    }
+
+    .download-btn:hover::after {
+      left: 120%;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px 10%;
+      background: rgba(17, 20, 26, 0.9);
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(78, 170, 255, 0.1);
+    }
+
+    .footer-left img {
+      height: 60px;
+      filter: drop-shadow(0 0 10px rgba(78, 170, 255, 0.5));
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-right a {
+      width: 50px;
+      height: 50px;
+      background: rgba(34, 34, 34, 0.8);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: #ccc;
+      font-size: 22px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(78, 170, 255, 0.2);
+    }
+
+    .footer-right a:hover {
+      background: #4eaaff;
+      color: white;
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(78, 170, 255, 0.5);
+    }
+
+    .copyright {
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+      color: #aaccff;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* 解决页面边缘白色问题 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0c14 0%, #0f1117 100%);
+      z-index: -2;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1200px) {
+      .section {
+        padding: 80px 8%;
+      }
+      
+      .section h2 {
+        font-size: 36px;
+      }
+      
+      .section p {
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .section {
+        padding: 80px 8%;
+      }
+      
+      .section h2 {
+        margin-bottom: 15px;
+      }
+      
+      .section-content {
+        width: 100%;
+      }
+      
+      .logo {
+        font-size: 60px;
+      }
+      
+      .subtitle {
+        font-size: 28px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 48px;
+      }
+      
+      .subtitle {
+        font-size: 22px;
+      }
+      
+      .changing-words {
+        min-width: 70px;
+      }
+      
+      .section h2 {
+        font-size: 32px;
+      }
+      
+      .section p {
+        font-size: 16px;
+      }
+      
+      .download-btn {
+        padding: 16px 40px;
+        font-size: 18px;
+      }
+      
+      footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+      }
+      
+      .footer-right {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo {
+        font-size: 36px;
+      }
+      
+      .subtitle {
+        font-size: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .changing-words {
+        min-width: 60px;
+      }
+      
+      .section {
+        padding: 60px 5%;
+        min-height: 40vh;
+      }
+      
+      .section h2 {
+        font-size: 28px;
+      }
+      
+      .download h2 {
+        font-size: 28px;
+        padding: 0 15px;
+      }
+    }
+    
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
+    }
+    
+    .scroll-text {
+      color: #aaccff;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .mouse {
+      width: 30px;
+      height: 50px;
+      border: 2px solid #4eaaff;
+      border-radius: 15px;
+      position: relative;
+    }
+    
+    .wheel {
+      width: 6px;
+      height: 10px;
+      background: #4eaaff;
+      border-radius: 3px;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: scroll 2s infinite;
+    }
+    
+    @keyframes scroll {
+      0% { top: 10px; opacity: 1; }
+      50% { top: 20px; opacity: 0.5; }
+      100% { top: 10px; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="logo">Clear UI</div>
+    <div class="subtitle">
+      一个
+      <span class="changing-words">
+        <span class="word">易懂</span>
+        <span class="word">简单</span>
+        <span class="word">好改</span>
+      </span>
+      的 SCOS
+    </div>
+    
+    <div class="scroll-indicator">
+      <div class="scroll-text">向下滚动</div>
+      <div class="mouse">
+        <div class="wheel"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>易懂</h2>
+      <p>Clear UI 专为 Scratch 用户设计，就像打开手机一样，轻松上手，不用写一行代码也能做系统。直观的界面让所有功能一目了然。</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>简单</h2>
+      <p>无多余复杂逻辑，全部模块按需加载，点击即用，页面切换更是丝滑如奶油。轻量级设计确保流畅体验。</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>好改</h2>
+      <p>从按钮颜色到窗口动画，你都能自己改！甚至连"系统崩溃警告"都能自定义样式！完全开放的架构让你随心定制。</p>
+    </div>
+  </section>
+
+  <section class="download">
+    <h2 style="font-size: 36px; margin-bottom: 30px; position: relative; z-index: 2;">立即体验 Clear UI</h2>
+    <a href="https://github.com/ClearUI/Releases" class="download-btn" target="_blank">跳转到 CCW</a>
+    <p style="color: #aaccff; margin-top: 50px; position: relative; z-index: 2;">立即体验这个坚持不使用任何扩展的 兼容性极强的 SCOS</p>
+  </section>
+
+  <footer>
+    <div class="footer-left">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iIzRlYWFmZiIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iIzc3ZDBmZiIvPjxwYXRoIGQ9Ik01MCA1MEwxNTAgNTAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI4Ii8+PC9zdmc+" alt="Clear UI Logo" />
+      <p style="color: #aaccff; margin-top: 15px; max-width: 300px;">为 Scratch 用户打造的轻量级操作系统界面</p>
+    </div>
+    <div class="footer-right">
+      <a href="https://scratch.mit.edu" title="Scratch 社区"><i class="fab fa-scratch"></i></a>
+      <a href="https://github.com/ClearUI" title="GitHub 仓库"><i class="fab fa-github"></i></a>
+      <a href="mailto:contact@clearui.com" title="联系我们"><i class="fas fa-envelope"></i></a>
+      <a href="https://clearui.com/docs" title="使用文档"><i class="fas fa-book"></i></a>
+    </div>
+    <div class="copyright">
+      &copy; 2023 Clear UI. 保留所有权利 | 由 Scratch 爱好者开发
+    </div>
+  </footer>
+
+  <script>
+    // 只保留滚动指示器的滚动功能
+    document.querySelectorAll('.scroll-indicator').forEach(element => {
+      element.addEventListener('click', () => {
+        window.scrollTo({
+          top: document.querySelector('.section').offsetTop,
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    // 解决边缘白色问题
+    document.body.style.overflowX = 'hidden';
+    
+    // 确保背景覆盖整个页面
+    const resizeBackground = () => {
+      const bodyHeight = document.body.scrollHeight;
+      document.body.style.minHeight = `${bodyHeight}px`;
+    };
+    
+    window.addEventListener('resize', resizeBackground);
+    window.addEventListener('load', resizeBackground);
+    
+    // 修复切换文字边界问题
+    const words = document.querySelectorAll('.changing-words .word');
+    words.forEach(word => {
+      // 添加微妙的背景渐变
+      // word.style.background = 'linear-gradient(to right, rgba(78, 170, 255, 0.1), rgba(78, 170, 255, 0.2))';
+    });
+  </script>
+</body>
+</html>
